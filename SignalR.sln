@@ -3,7 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalR.WebMVC", "SignalR.WebMVC\SignalR.WebMVC.csproj", "{99A462AC-C2F5-4D78-9A4A-2CF624374BFA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalR.WebServer", "SignalR.WebServer\SignalR.WebServer.csproj", "{ACA01627-7FC5-4943-A5D9-B9B95173D61B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServerSide", "ServerSide", "{FD7B47B8-E168-432E-B6A0-76F098BFA9FA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClientSide", "ClientSide", "{F7E6BE7D-DEAE-4303-A206-FABD5830FA2A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalR.WebClient", "SignalR.WebClient\SignalR.WebClient.csproj", "{08487DC1-2756-465B-B6F9-E8ECC608781E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalR.WindowsFormsClient", "SignalR.WindowsFormsClient\SignalR.WindowsFormsClient.csproj", "{45071174-499F-4A6C-B02F-5B009BB5CFB5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,13 +19,26 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{99A462AC-C2F5-4D78-9A4A-2CF624374BFA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{99A462AC-C2F5-4D78-9A4A-2CF624374BFA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{99A462AC-C2F5-4D78-9A4A-2CF624374BFA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{99A462AC-C2F5-4D78-9A4A-2CF624374BFA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACA01627-7FC5-4943-A5D9-B9B95173D61B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACA01627-7FC5-4943-A5D9-B9B95173D61B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACA01627-7FC5-4943-A5D9-B9B95173D61B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACA01627-7FC5-4943-A5D9-B9B95173D61B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08487DC1-2756-465B-B6F9-E8ECC608781E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08487DC1-2756-465B-B6F9-E8ECC608781E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08487DC1-2756-465B-B6F9-E8ECC608781E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08487DC1-2756-465B-B6F9-E8ECC608781E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{45071174-499F-4A6C-B02F-5B009BB5CFB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45071174-499F-4A6C-B02F-5B009BB5CFB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45071174-499F-4A6C-B02F-5B009BB5CFB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45071174-499F-4A6C-B02F-5B009BB5CFB5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{ACA01627-7FC5-4943-A5D9-B9B95173D61B} = {FD7B47B8-E168-432E-B6A0-76F098BFA9FA}
+		{08487DC1-2756-465B-B6F9-E8ECC608781E} = {F7E6BE7D-DEAE-4303-A206-FABD5830FA2A}
+		{45071174-499F-4A6C-B02F-5B009BB5CFB5} = {F7E6BE7D-DEAE-4303-A206-FABD5830FA2A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {09A393ED-8D0D-47E6-82E1-092E6595E94C}
