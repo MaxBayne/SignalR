@@ -18,6 +18,8 @@ namespace SignalR.WindowsFormsClient
         private void frmChat_Load(object sender, EventArgs e)
         {
             addressTextBox.Focus();
+
+            
         }
 
 
@@ -31,10 +33,22 @@ namespace SignalR.WindowsFormsClient
                 .WithUrl(addressTextBox.Text)
                 .Build();
 
+            //Client will wait for any server called to call methods defined inside Client side
             _connection.On<string, string>("ReceiveMessage", (name, message) =>
             {
                 Log(Color.Black, name + ": " + message);
             });
+            
+            _connection.On("GetMessage", async () =>
+            {
+                return "Message sent from client desktop app";
+            });
+
+            _connection.On("Get_Client_Name", async () =>
+            {
+                return "Iam Desktop Client";
+            });
+
 
             Log(Color.Gray, "Starting connection...");
             try
@@ -75,6 +89,7 @@ namespace SignalR.WindowsFormsClient
         {
             try
             {
+                //Client will call method called (SendMessage) that defined inside Server Hub and pass parameters to it
                 await _connection.InvokeAsync("SendMessage", txt_sender.Text, messageTextBox.Text);
             }
             catch (Exception ex)

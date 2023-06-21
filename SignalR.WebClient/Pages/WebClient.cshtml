@@ -37,7 +37,8 @@
 
     //Disable the send button until connection is established.
     document.getElementById("sendButton").disabled = true;
-
+    
+    //Client will wait if server ask to call methods inside it
     connection.on("ReceiveMessage", function (sender, message) 
     {
         var li = document.createElement("li");
@@ -50,6 +51,21 @@
         li.textContent = `${sender} says ${message}`;
     });
 
+    //connection.onWithResult("GetMessage", function() 
+    //{
+    //    return Single.just("message");
+    //});
+
+    //connection.onWithResult("Get_Client_Name", function() 
+    //{
+    //    return Single.just("Iam Web Client");
+    //});
+    
+    
+    
+    
+    
+
     connection.start().then(function () 
     {
         document.getElementById("sendButton").disabled = false;
@@ -58,14 +74,15 @@
     {
         return console.error(err.toString());
     });
+    
 
     document.getElementById("sendButton").addEventListener("click", function (event) 
     {
         var sender = document.getElementById("txtSender").value;
         var message = document.getElementById("txtMessage").value;
-
-        connection.invoke("SendMessage", sender, message)
-        .catch(function (err) 
+        
+        //Client will call method called (SendMessage) that defined inside Server Hub and pass parameters
+        connection.invoke("SendMessage", sender, message).catch(function (err) 
         {
             return console.error(err.toString());
         });
