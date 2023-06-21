@@ -2,12 +2,16 @@
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 
 namespace SignalR.WindowsFormsClient
 {
     public partial class FrmChat : Form
     {
         private HubConnection _connection;
+
+
+        #region Form
 
         public FrmChat()
         {
@@ -17,39 +21,51 @@ namespace SignalR.WindowsFormsClient
 
         private void frmChat_Load(object sender, EventArgs e)
         {
-            addressTextBox.Focus();
+            
         }
 
+        #endregion
 
-        #region Button
+        #region Connection Methods
 
         private async void connectButton_Click(object sender, EventArgs e)
         {
-            UpdateState(connected: false);
-
             _connection = new HubConnectionBuilder()
                 .WithUrl(addressTextBox.Text)
+                .ConfigureLogging(configureLogging => configureLogging.SetMinimumLevel(LogLevel.Debug))
                 .Build();
 
+
+            //Client will wait for any server called to call methods defined inside Client side
             _connection.On<string, string>("ReceiveMessage", (name, message) =>
             {
                 Log(Color.Black, name + ": " + message);
             });
 
+            _connection.On<string, string>("ReceiveMessageFromGroup", (group, message) =>
+            {
+                Log(Color.Black, group + "Group: " + message);
+            });
+
+            _connection.On("GetMessage", async () =>
+            {
+                return "Message sent from client desktop app";
+            });
+
+            _connection.On("Get_Client_Name", async () =>
+            {
+                return "Iam Desktop Client";
+            });
+
+
+
             Log(Color.Gray, "Starting connection...");
-            try
-            {
-                await _connection.StartAsync();
-            }
-            catch (Exception ex)
-            {
-                Log(Color.Red, ex.ToString());
-                return;
-            }
+
+            await _connection.StartAsync();
+
+            this.Text = $@"Chat-{_connection.ConnectionId}";
 
             Log(Color.Gray, "Connection established.");
-
-            UpdateState(connected: true);
 
             messageTextBox.Focus();
         }
@@ -57,24 +73,39 @@ namespace SignalR.WindowsFormsClient
         private async void disconnectButton_Click(object sender, EventArgs e)
         {
             Log(Color.Gray, "Stopping connection...");
-            try
-            {
-                await _connection.StopAsync();
-            }
-            catch (Exception ex)
-            {
-                Log(Color.Red, ex.ToString());
-            }
+
+            await _connection.StopAsync();
+
+            this.Text = "Chat";
 
             Log(Color.Gray, "Connection terminated.");
-
-            UpdateState(connected: false);
         }
+
+        #endregion
+
+        #region Groups Methods
+
+        private async void btn_JoinGroup_Click(object sender, EventArgs e)
+        {
+            await _connection.InvokeAsync("JoinClientToGroup", _connection.ConnectionId, txt_GroupName.Text);
+            Log(Color.Blue, $"Joined With Group {txt_GroupName.Text}");
+        }
+
+        private async void btn_LeaveGroup_Click(object sender, EventArgs e)
+        {
+            await _connection.InvokeAsync("RemoveClientFromGroup", _connection.ConnectionId, txt_GroupName.Text);
+            Log(Color.Blue, $"Leaving Group {txt_GroupName.Text}");
+        }
+
+        #endregion
+
+        #region Messages Methods
 
         private async void sendButton_Click(object sender, EventArgs e)
         {
             try
             {
+                //Client will call method called (SendMessage) that defined inside Server Hub and pass parameters to it
                 await _connection.InvokeAsync("SendMessage", txt_sender.Text, messageTextBox.Text);
             }
             catch (Exception ex)
@@ -82,17 +113,33 @@ namespace SignalR.WindowsFormsClient
                 Log(Color.Red, ex.ToString());
             }
         }
+
+        private async void btn_SendToGroup_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                //Client will call method called (SendMessage) that defined inside Server Hub and pass parameters to it
+                await _connection.InvokeAsync("SendMessageToClientsInsideGroup", txt_GroupName.Text, messageTextBox.Text);
+            }
+            catch (Exception ex)
+            {
+                Log(Color.Red, ex.ToString());
+            }
+        }
+
         #endregion
+
+
 
         #region TextBox
         private void addressTextBox_Enter(object sender, EventArgs e)
         {
-            AcceptButton = connectButton;
+            AcceptButton = btn_Connect;
         }
 
         private void messageTextBox_Enter(object sender, EventArgs e)
         {
-            AcceptButton = sendButton;
+            AcceptButton = btn_SendToAll;
         }
 
         #endregion
@@ -116,16 +163,6 @@ namespace SignalR.WindowsFormsClient
 
 
         #region Helper
-
-        private void UpdateState(bool connected)
-        {
-            disconnectButton.Enabled = connected;
-            connectButton.Enabled = !connected;
-            addressTextBox.Enabled = !connected;
-
-            messageTextBox.Enabled = connected;
-            sendButton.Enabled = connected;
-        }
 
         private void Log(Color color, string message)
         {
@@ -152,8 +189,6 @@ namespace SignalR.WindowsFormsClient
 
         #endregion
 
-
-
-
+       
     }
 }

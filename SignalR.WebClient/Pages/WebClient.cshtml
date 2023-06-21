@@ -1,0 +1,173 @@
+﻿@page
+@model SignalR.WebClient.Pages.ChatClientModel
+@{
+    ViewData["Title"] = "Chat Page";
+}
+
+<div class="container">
+    
+    <div class="row p-1">
+        <div class="col-1">Id</div>
+        <div class="col-5"><input type="text" id="txtConnectionId" value="-" readonly="true"/></div>
+    </div>
+
+    <div class="row p-1">
+        <div class="col-1">Group</div>
+        <div class="col-5"><input type="text" id="txtGroup" value="admin"/></div>
+    </div>
+
+    <div class="row p-1">
+        <div class="col-1">Sender</div>
+        <div class="col-5"><input type="text" id="txtSender" value="WebClient"/></div>
+    </div>
+    <div class="row p-1">
+        <div class="col-1">Message</div>
+        <div class="col-5"><input type="text" class="w-100" id="txtMessage" value="Hello World" /></div>
+    </div>
+    <div class="row p-1">
+        <div class="col-6 text-end">
+            <input type="button" id="btnConnect" value="Connect" />
+            <input type="button" id="btnDisConnect" value="DisConnect" />
+            <br />
+            <input type="button" id="btnJoinGroup" value="Join Group" />
+            <input type="button" id="btnLeaveGroup" value="Leave Group" />
+            <br />
+            <input type="button" id="btnSend" value="Send Message To All" />
+            <input type="button" id="btnSendToGroup" value="Send Message To Group" />
+        </div>
+    </div>
+    <div class="row p-1">
+        <div class="col-6">
+            <hr />
+        </div>
+    </div>
+    <div class="row p-1">
+        <div class="col-6">
+            <ul id="messagesList"></ul>
+        </div>
+    </div>
+</div>
+
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script src="/lib/microsoft-signalr/signalr.js"></script>
+
+<script>
+    
+    //Build Connection To Server Hub and Enable Logging inside Client Side
+    var connection = new signalR.HubConnectionBuilder()
+                                .withUrl("https://localhost:7032/ChatHub")
+                                .configureLogging(signalR.LogLevel.Debug)
+                                .build();
+    
+    //Register Events Handlers For Client Methods when Server try to ask to execute method
+    
+    //Client will wait if server ask to call methods inside it
+    connection.on("ReceiveMessage", function (sender, message) 
+    {
+        var li = document.createElement("li");
+
+        document.getElementById("messagesList").appendChild(li);
+
+        // We can assign user-supplied strings to an element's textContent because it
+        // is not interpreted as markup. If you're assigning in any other way, you
+        // should be aware of possible script injection concerns.
+        li.textContent = `${sender} says ${message}`;
+    });
+    
+    //Client will wait if server ask to call methods inside it
+    connection.on("ReceiveMessageFromGroup", function (group,message) 
+    {
+        var li = document.createElement("li");
+
+        document.getElementById("messagesList").appendChild(li);
+
+        // We can assign user-supplied strings to an element's textContent because it
+        // is not interpreted as markup. If you're assigning in any other way, you
+        // should be aware of possible script injection concerns.
+        li.textContent = `${group} Group => says ${message}`;
+    });
+
+    
+    
+    //Connect to Hub Server via WebSocket
+    $("#btnConnect").click(function (event) 
+    {
+        connection.start();
+        alert("Connected To Hub Server");
+        $("#txtConnectionId").val(connection.connectionId);
+        
+    });
+    
+    //Disconnect from Hub Server via WebSocket
+    $("#btnDisConnect").click(function (event) {
+        connection.stop();
+        alert("DisConnected From Hub Server");
+        $("#txtConnectionId").val("-");
+    });
+    
+    
+    
+    //Join Client To Group
+    $("#btnJoinGroup").click(function (event) 
+    {
+        var group = document.getElementById("txtGroup").value;
+        
+        connection.invoke("JoinClientToGroup", connection.connectionId, group).catch(function (err) 
+        {
+            return console.error(err.toString());
+        });
+
+        alert("Client Join the Group");
+    });
+    
+    //Leave Client From Group
+    $("#btnLeaveGroup").click(function (event) 
+{
+        var group = document.getElementById("txtGroup").value;
+
+        connection.invoke("RemoveClientFromGroup", connection.Id, group).catch(function (err) 
+        {
+            return console.error(err.toString());
+        });
+        
+        alert("Client Leave the Group");
+    });
+    
+    
+
+    //Send Message to Hub Server
+    $("#btnSend").click(function (event) 
+    {
+        var sender = document.getElementById("txtSender").value;
+        var message = document.getElementById("txtMessage").value;
+
+        //Client will call method called (SendMessage) that defined inside Server Hub and pass parameters
+        connection.invoke("SendMessage", sender, message).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        event.preventDefault();
+        
+        alert("Send Message To All Clients");
+    });
+
+    //Send Message to specific Group into Hub Server 
+    $("#btnSendToGroup").click(function (event) 
+    {
+        var message = document.getElementById("txtMessage").value;
+        var group = document.getElementById("txtGroup").value;
+
+        //Client will call method called (SendMessageToClientsInsideGroup) that defined inside Server Hub and pass parameters
+        connection.invoke("SendMessageToClientsInsideGroup", group, message).catch(function (err) 
+        {
+            return console.error(err.toString());
+        });
+        
+        event.preventDefault();
+        
+        alert("Send Message To Group");
+    });
+
+    
+
+</script>
