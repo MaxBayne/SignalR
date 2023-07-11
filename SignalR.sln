@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33627.172
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalR.WebServer", "SignalR.WebServer\SignalR.WebServer.csproj", "{ACA01627-7FC5-4943-A5D9-B9B95173D61B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalR.WebServer", "SignalR.WebServer\SignalR.WebServer.csproj", "{ACA01627-7FC5-4943-A5D9-B9B95173D61B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ServerSide", "ServerSide", "{FD7B47B8-E168-432E-B6A0-76F098BFA9FA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClientSide", "ClientSide", "{F7E6BE7D-DEAE-4303-A206-FABD5830FA2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalR.WebClient", "SignalR.WebClient\SignalR.WebClient.csproj", "{08487DC1-2756-465B-B6F9-E8ECC608781E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SignalR.WebClient", "SignalR.WebClient\SignalR.WebClient.csproj", "{08487DC1-2756-465B-B6F9-E8ECC608781E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalR.WindowsFormsClient", "SignalR.WindowsFormsClient\SignalR.WindowsFormsClient.csproj", "{45071174-499F-4A6C-B02F-5B009BB5CFB5}"
 EndProject

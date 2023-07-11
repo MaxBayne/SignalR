@@ -117,7 +117,7 @@
             this.addressTextBox.Name = "addressTextBox";
             this.addressTextBox.Size = new System.Drawing.Size(617, 20);
             this.addressTextBox.TabIndex = 7;
-            this.addressTextBox.Text = "https://localhost:7032/ChatHub\r\n";
+            this.addressTextBox.Text = "https://localhost:7032/hubs/chatHub\r\n";
             this.addressTextBox.Enter += new System.EventHandler(this.addressTextBox_Enter);
             // 
             // txt_sender

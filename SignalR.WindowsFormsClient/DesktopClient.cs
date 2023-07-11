@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
@@ -9,7 +10,7 @@ namespace SignalR.WindowsFormsClient
     public partial class FrmChat : Form
     {
         private HubConnection _connection;
-
+        
 
         #region Form
 
@@ -18,6 +19,7 @@ namespace SignalR.WindowsFormsClient
             InitializeComponent();
         }
 
+        
 
         private void frmChat_Load(object sender, EventArgs e)
         {
@@ -33,7 +35,29 @@ namespace SignalR.WindowsFormsClient
             _connection = new HubConnectionBuilder()
                 .WithUrl(addressTextBox.Text)
                 .ConfigureLogging(configureLogging => configureLogging.SetMinimumLevel(LogLevel.Debug))
+                .WithAutomaticReconnect() //if client lost connection with server then client will try reconnect after 0,2,10,30 seconds and last if fail to reconnect then will wire closed event
                 .Build();
+
+            
+            _connection.Reconnecting += (exception) =>
+            {
+                MessageBox.Show($@"Connection To Server Lost and Try Reconnecting Error={exception}");
+                return Task.CompletedTask;
+            };
+            _connection.Reconnected += (connectionId) =>
+            {
+                MessageBox.Show($@"Connection To Server Come back after Lost with ConnectionId={connectionId}");
+                return Task.CompletedTask;
+            };
+            _connection.Closed += async(exception) =>
+            {
+                MessageBox.Show(@"Closed Connection , please try to manual connect again");
+
+                //Try to ReConnect after delay 10 second
+                await Task.Delay(10000);
+                await _connection.StartAsync();
+                //return await Task.CompletedTask;
+            };
 
 
             //Client will wait for any server called to call methods defined inside Client side
@@ -47,14 +71,31 @@ namespace SignalR.WindowsFormsClient
                 Log(Color.Black, group + "Group: " + message);
             });
 
-            _connection.On("GetMessage", async () =>
+            _connection.On("GetMessage", () =>
             {
-                return "Message sent from client desktop app";
+                return Task.FromResult("Message sent from client desktop app");
             });
 
-            _connection.On("Get_Client_Name", async () =>
+            _connection.On("Get_Client_Name", () =>
             {
-                return "Iam Desktop Client";
+                return Task.FromResult("Iam Desktop Client");
+            });
+
+            _connection.On<int>("UpdateTotalUsers", (totalUsers) =>
+            {
+
+                if (this.InvokeRequired)
+                {
+                    this.Invoke(new Action(() =>
+                    {
+                        this.Text = $@"Chat - (TotalUsers = {totalUsers})";
+                    }));
+                }
+                else
+                {
+                    this.Text = $@"Chat - (TotalUsers = {totalUsers})";
+                }
+
             });
 
 
@@ -62,8 +103,6 @@ namespace SignalR.WindowsFormsClient
             Log(Color.Gray, "Starting connection...");
 
             await _connection.StartAsync();
-
-            this.Text = $@"Chat-{_connection.ConnectionId}";
 
             Log(Color.Gray, "Connection established.");
 
@@ -76,7 +115,7 @@ namespace SignalR.WindowsFormsClient
 
             await _connection.StopAsync();
 
-            this.Text = "Chat";
+            this.Text = @"Chat";
 
             Log(Color.Gray, "Connection terminated.");
         }
@@ -89,6 +128,7 @@ namespace SignalR.WindowsFormsClient
         {
             await _connection.InvokeAsync("JoinClientToGroup", _connection.ConnectionId, txt_GroupName.Text);
             Log(Color.Blue, $"Joined With Group {txt_GroupName.Text}");
+            
         }
 
         private async void btn_LeaveGroup_Click(object sender, EventArgs e)
