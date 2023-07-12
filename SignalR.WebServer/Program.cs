@@ -1,6 +1,4 @@
-using Microsoft.AspNetCore.SignalR;
 using SignalR.WebServer.Hubs;
-using SignalR.WebServer.HubsFilters;
 using SignalR.WebServer.Services;
 
 namespace SignalR.WebServer
@@ -14,11 +12,11 @@ namespace SignalR.WebServer
             //Add Services
             builder.Services.AddRazorPages();
             builder.Services.AddCors();
-            builder.Services.AddSignalR(options =>
+            builder.Services.AddSignalR(_ =>
             {
                 //Global Hub Filter will Run First
                 //options.AddFilter<GeneralHubFilter>();
-            }).AddHubOptions<ChatHub>(chatHubOptions =>
+            }).AddHubOptions<ChatHub>(_ =>
             {
                 //Local Hub Filter will Run Second
                 //chatHubOptions.AddFilter<LocalHubFilter>();
@@ -31,15 +29,8 @@ namespace SignalR.WebServer
             //Build App
             var app = builder.Build();
 
-            //Map Routes
-            //app.MapGet("/", () => "Welcome To SignalR Server");
-            app.MapRazorPages();
-
-            //Map Hubs Routes
-            app.MapHub<ChatHub>("/hubs/chatHub");
-
-
             // Configure the HTTP request pipeline by adding Middleware to request pipelines
+
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
@@ -54,7 +45,7 @@ namespace SignalR.WebServer
             app.UseCors(x => x
                 .AllowAnyMethod()
                 .AllowAnyHeader()
-                .SetIsOriginAllowed(origin => true)
+                .SetIsOriginAllowed(_ => true)
                 .AllowCredentials());
 
             //add websocket as middleware to pipeline request (not required with singalR just required when using pure websocket)
@@ -86,27 +77,36 @@ namespace SignalR.WebServer
                 
             });
             */
+
+
+
+            //Map Routes
+            //app.MapGet("/", () => "Welcome To SignalR Server");
+            app.MapRazorPages();
+            //Map Hubs Routes
+            app.MapHub<ChatHub>("/hubs/chatHub");
             
 
             //Run App
             app.Run();
+
         }
 
         #region Helper
 
-        private static void PrintRequestHeaderInfo(HttpContext context)
-        {
-            Console.WriteLine("-----------------------------Start Request Info----------------------------");
-            Console.WriteLine($"Method: {context.Request.Method}");
-            Console.WriteLine($"Protocol: {context.Request.Protocol}");
+        //private static void PrintRequestHeaderInfo(HttpContext context)
+        //{
+        //    Console.WriteLine("-----------------------------Start Request Info----------------------------");
+        //    Console.WriteLine($"Method: {context.Request.Method}");
+        //    Console.WriteLine($"Protocol: {context.Request.Protocol}");
 
-            foreach (var requestHeader in context.Request.Headers)
-            {
-                Console.WriteLine($"=> {requestHeader.Key}: {requestHeader.Value}");
-            }
+        //    foreach (var requestHeader in context.Request.Headers)
+        //    {
+        //        Console.WriteLine($"=> {requestHeader.Key}: {requestHeader.Value}");
+        //    }
 
-            Console.WriteLine("-----------------------------Finish Request Info----------------------------");
-        }
+        //    Console.WriteLine("-----------------------------Finish Request Info----------------------------");
+        //}
 
         #endregion
 

@@ -60,6 +60,7 @@ namespace SignalR.WebServer.Hubs
 
         //Client receive message from server and need to response to it
         Task<string> GetClientName();
+
     }
 
     /// <summary>

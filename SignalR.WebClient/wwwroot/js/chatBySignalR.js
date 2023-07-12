@@ -13,12 +13,30 @@ var txtUser = document.getElementById("txtUser");
 
 //Build Connection To Server Hub and Enable Logging inside Client Side
 var connection = new signalR.HubConnectionBuilder()
-    .configureLogging(signalR.LogLevel.Debug)
+    .configureLogging(signalR.LogLevel.Trace)
     //.withUrl("https://localhost:7032/hubs/chatHub", signalR.HttpTransportType.LongPolling)
     //.withUrl("https://localhost:7032/hubs/chatHub", signalR.HttpTransportType.ServerSentEvents)
     //.withUrl("https://localhost:7032/hubs/chatHub", signalR.HttpTransportType.WebSockets)
     .withUrl(txtHubUrl.value) //its default to websockets
+    .withAutomaticReconnect() //wait 0, 2, 10, and 30 seconds respectively before trying each reconnect attempt
     .build();
+
+connection.onreconnecting(error =>
+{
+    alert("Connection To Hub Server Lost , try Reconnecting");
+});
+
+connection.onreconnected(connectionId =>
+{
+    alert(`Connection reestablished. Connected with connectionId "${connectionId}".`);
+
+});
+
+connection.onclose(error =>
+{
+    alert(`Connection closed due to error "${error}". Try refreshing this page to restart the connection.`);
+});
+
 
 //Register Events Handlers For Client Methods when Server try to ask to execute method
 
@@ -169,7 +187,7 @@ btnSend.onclick=function (event)
     try {
         var sender = document.getElementById("txtUser").value;
         var message = document.getElementById("txtMessage").value;
-
+        
         //Client will call method called (SendMessage) that defined inside Server Hub and pass parameters
         connection.invoke("SendMessage", sender, message)
             .then(() => {
